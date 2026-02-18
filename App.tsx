@@ -203,7 +203,7 @@ const App: React.FC = () => {
                     </li>
                     <li className="flex gap-4 items-start">
                         <div className="bg-mpt-blue text-white w-7 h-7 rounded-lg flex items-center justify-center text-sm font-black shrink-0">3</div>
-                        <p className="text-sm font-bold text-gray-600 leading-snug">Hold your voice in a prize zone for <span className="text-blue-900">3 SECONDS</span> to win!</p>
+                        <p className="text-sm font-bold text-gray-600 leading-snug">Hold your voice in a prize zone for <span className="text-blue-900">5 SECONDS</span> to win!</p>
                     </li>
                 </ul>
                 <div className="mt-8 pt-6 border-t border-gray-100 text-center">
