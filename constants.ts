@@ -10,7 +10,13 @@ export const COLORS = {
   DANGER: '#EF4444'
 };
 
-export const KEYWORDS = ["MPT", "Htaw B", "Hti Pauk", "BOGO!", "WINNER!"];
+export const KEYWORDS = ["MPT", "HtawB", "Hti Pauk", "GO!", "WINNER", "VOICE POWER"];
+
+export const SOUNDS = {
+  TIN: 'https://www.soundjay.com/buttons_c2026/button-30.mp3',
+  START: 'https://www.soundjay.com/misc/sounds/bell-ring-01.mp3',
+  TICK: 'https://www.soundjay.com/buttons_c2026/button-29.mp3'
+};
 
 export const INITIAL_REWARDS: ShoutReward[] = [
   { id: '6', title: 'Pen', amount: '250', icon: '🖊️', minVolume: 25, maxVolume: 55, color: COLORS.LIGHT_BLUE },

@@ -1,7 +1,7 @@
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ShoutReward } from '../types';
-import { COLORS, KEYWORDS } from '../constants';
+import { COLORS, KEYWORDS, SOUNDS } from '../constants';
 import { Mic, Volume2, Timer, Zap } from 'lucide-react';
 
 interface ShoutGameProps {
@@ -14,37 +14,87 @@ interface ShoutGameProps {
 const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, setIsPlaying }) => {
   const [volume, setVolume] = useState(0);
   const [targetReward, setTargetReward] = useState<ShoutReward | null>(null);
-  const [holdTime, setHoldTime] = useState(0); // in milliseconds
+  const [holdTime, setHoldTime] = useState(0); 
   const [micError, setMicError] = useState<string | null>(null);
   const [currentKeyword, setCurrentKeyword] = useState("");
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isPreparing, setIsPreparing] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const requestRef = useRef<number>(null);
   const lastTimeRef = useRef<number>(0);
   const winRef = useRef(false);
+  const tinSoundRef = useRef<HTMLAudioElement | null>(null);
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
 
-  const WIN_DURATION = 5000; // 5 seconds hold time
+  const WIN_DURATION = 5000;
+
+  useEffect(() => {
+    tinSoundRef.current = new Audio(SOUNDS.TIN);
+    startSoundRef.current = new Audio(SOUNDS.START);
+  }, []);
+
+  const playSound = (audio: HTMLAudioElement | null) => {
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+  };
 
   const startMic = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(analyserRef.current);
-      analyserRef.current.fftSize = 256;
+      // Pre-check permissions
+      await navigator.mediaDevices.getUserMedia({ audio: true });
       
       const randomIdx = Math.floor(Math.random() * KEYWORDS.length);
       setCurrentKeyword(KEYWORDS[randomIdx]);
       
-      setIsPlaying(true);
-      setMicError(null);
-      winRef.current = false;
-      setHoldTime(0);
+      setIsPreparing(true);
+      setCountdown(3);
+      playSound(tinSoundRef.current);
     } catch (err) {
       setMicError("Microphone access denied. Please enable mic to play!");
     }
+  };
+
+  useEffect(() => {
+    if (countdown === null) return;
+
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+        playSound(tinSoundRef.current);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      const timer = setTimeout(() => {
+        playSound(startSoundRef.current);
+        setCountdown(-1); // Use -1 to show "SHOUT!"
+        initAudio();
+        
+        // Hide preparation overlay after a brief flash of "SHOUT!"
+        setTimeout(() => {
+          setIsPreparing(false);
+          setCountdown(null);
+        }, 1000);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  const initAudio = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+    const source = audioContextRef.current.createMediaStreamSource(stream);
+    source.connect(analyserRef.current);
+    analyserRef.current.fftSize = 256;
+    
+    setIsPlaying(true);
+    setMicError(null);
+    winRef.current = false;
+    setHoldTime(0);
   };
 
   const update = (time: number) => {
@@ -103,6 +153,34 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
 
   return (
     <div className="relative flex flex-col items-center w-full max-w-xl px-4 overflow-hidden">
+      {/* PREPARATION & COUNTDOWN OVERLAY */}
+      {isPreparing && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-blue-900/80 backdrop-blur-md p-6">
+          <div className="bg-white rounded-[3rem] p-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)] border-[10px] border-mpt-yellow max-w-sm w-full animate-in zoom-in duration-300">
+            <p className="text-gray-400 font-black text-sm uppercase tracking-[0.3em] mb-4">GET READY TO WIN</p>
+            <h3 className="text-blue-900 font-black text-2xl uppercase tracking-tighter mb-1 leading-none italic">SHOUT THIS NOW:</h3>
+            <div className="bg-mpt-yellow/10 py-4 px-2 rounded-2xl border-2 border-mpt-yellow/20 mb-8 mt-2">
+               <h2 className="text-5xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse leading-none">
+                 "{currentKeyword}"
+               </h2>
+            </div>
+            
+            <div className="flex justify-center items-center h-32">
+              {countdown !== null && countdown > 0 && (
+                <div key={countdown} className="text-blue-900 font-black text-8xl animate-in zoom-in duration-300">
+                  {countdown}
+                </div>
+              )}
+              {countdown === -1 && (
+                <div className="text-mpt-blue font-black text-7xl italic animate-bounce leading-none">
+                  SHOUT!
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Background Visualizer */}
       <div className="absolute inset-0 -z-10 opacity-10 flex items-center justify-center overflow-hidden pointer-events-none">
          <div className="flex gap-2 items-end h-64">
@@ -131,46 +209,45 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
           
           <button
             onClick={startMic}
-            className="group px-12 py-6 bg-mpt-yellow text-blue-900 rounded-full font-black text-2xl uppercase tracking-tighter shadow-[0_8px_0_#B49400] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-4 mx-auto"
+            disabled={isPreparing}
+            className="group px-12 py-6 bg-mpt-yellow text-blue-900 rounded-full font-black text-2xl uppercase tracking-tighter shadow-[0_8px_0_#B49400] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-4 mx-auto disabled:opacity-50"
           >
             <Zap size={28} className="group-hover:animate-pulse" /> START CHALLENGE
           </button>
         </div>
       ) : (
-        <div className="w-full space-y-5 py-2">
-          {/* Keyword Prompt - Increased font size */}
-          <div className="text-center bg-white rounded-2xl p-4 shadow-xl border-[5px] border-mpt-yellow mx-auto max-w-[340px] transform -rotate-1">
-             <p className="text-[12px] font-black text-blue-900/40 uppercase tracking-[0.25em] mb-1 leading-none">SHOUT THIS NOW:</p>
-             <h3 className="text-4xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse leading-none py-1">
-               "{currentKeyword}"
-             </h3>
-          </div>
-
-          {/* Mic Status Area - Increased visibility and text sizes */}
-          <div className="flex justify-between items-center bg-white rounded-[1.5rem] p-5 border-2 border-mpt-yellow shadow-2xl">
-            <div className="flex items-center gap-4">
-               <div className="p-3 bg-mpt-yellow rounded-2xl text-blue-900 shadow-sm">
-                  <Volume2 size={24} />
+        <div className="w-full space-y-4 py-2">
+          {/* Main HUD: Status info moved to top to save space */}
+          <div className="flex justify-between items-center bg-white rounded-[1.5rem] p-4 border-2 border-mpt-yellow shadow-2xl">
+            <div className="flex items-center gap-3">
+               <div className="p-2.5 bg-mpt-yellow rounded-xl text-blue-900 shadow-sm">
+                  <Volume2 size={20} />
                </div>
                <div>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-blue-900/50 leading-none mb-1.5">VOICE POWER</p>
-                  <p className="text-3xl font-black leading-none text-blue-900">{volume}%</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-blue-900/50 leading-none mb-1">VOICE POWER</p>
+                  <p className="text-2xl font-black leading-none text-blue-900">{volume}%</p>
                </div>
+            </div>
+
+            {/* Compact Indicator for active keyword during play */}
+            <div className="hidden sm:flex flex-col items-center">
+                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-0.5">TARGET:</span>
+                <span className="text-blue-900 font-black text-xs uppercase italic tracking-tighter">{currentKeyword}</span>
             </div>
             
-            <div className="flex items-center gap-4 text-right">
+            <div className="flex items-center gap-3 text-right">
                <div>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-blue-900/50 leading-none mb-1.5">HOLD TIMER</p>
-                  <p className="text-3xl font-black leading-none text-blue-900">{(holdTime / 1000).toFixed(1)}s <span className="text-base text-blue-900/30 font-bold">/ 5s</span></p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-blue-900/50 leading-none mb-1">HOLD TIMER</p>
+                  <p className="text-2xl font-black leading-none text-blue-900">{(holdTime / 1000).toFixed(1)}s <span className="text-sm text-blue-900/30 font-bold">/ 5s</span></p>
                </div>
-               <div className="p-3 bg-blue-900 rounded-2xl text-white shadow-sm">
-                  <Timer size={24} className={holdTime > 0 ? "animate-pulse" : ""} />
+               <div className="p-2.5 bg-blue-900 rounded-xl text-white shadow-sm">
+                  <Timer size={20} className={holdTime > 0 ? "animate-pulse" : ""} />
                </div>
             </div>
           </div>
 
-          <div className="flex gap-4 items-stretch h-[360px]">
-            {/* Vertical Power Meter Indicator */}
+          <div className="flex gap-4 items-stretch h-[420px]">
+            {/* Vertical Power Meter */}
             <div className="w-14 bg-white/10 rounded-2xl border-2 border-white/15 relative overflow-hidden flex flex-col justify-end p-1.5 shadow-inner">
                <div 
                  className="w-full rounded-xl transition-all duration-100 ease-out"
@@ -193,7 +270,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                ))}
             </div>
 
-            {/* Reward Ladder - Optimized with larger fonts */}
+            {/* Reward Ladder */}
             <div className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1">
               {sortedRewards.map((reward) => {
                 const isActive = targetReward?.id === reward.id;
@@ -223,7 +300,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                             {reward.title}
                           </h4>
                           <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive ? 'text-blue-700/60' : 'text-white/30'}`}>
-                            MIN {reward.minVolume}% INTENSITY
+                            {reward.minVolume}% INTENSITY
                           </p>
                         </div>
                       </div>
