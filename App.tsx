@@ -157,7 +157,7 @@ const App: React.FC = () => {
           <HistoryTable history={history} onClear={clearHistory} />
         </div>
 
-        {/* Center: Game */}
+        {/* Center: Game Area */}
         <div className="lg:col-span-6 flex flex-col items-center justify-center order-1 lg:order-2 overflow-hidden">
             <ShoutGame 
                 rewards={rewards} 
@@ -167,90 +167,107 @@ const App: React.FC = () => {
             />
         </div>
 
-        {/* Right Side: Stats & Info */}
+        {/* Right Side: Stats & Info Cards */}
         <div className="lg:col-span-3 space-y-4 flex flex-col h-full overflow-hidden order-3">
-            <div className="bg-white/10 rounded-2xl p-4 border border-white/10 backdrop-blur-xl shadow-2xl flex-shrink-0">
-                <div className="flex items-center gap-2 mb-3 text-mpt-yellow font-black uppercase tracking-widest text-[10px]">
-                    <TrendingUp size={14} strokeWidth={3} />
-                    <span>Fan Energy Stats</span>
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex justify-between items-center">
-                        <div className="text-[9px] text-mpt-yellow/70 uppercase font-black tracking-widest">Total</div>
-                        <div className="text-xl font-black tabular-nums">{history.length}</div>
+            {/* Fan Energy Stats Card - Increased Font Sizes */}
+            <div className="bg-white rounded-3xl p-5 border-4 border-mpt-yellow shadow-[0_10px_30px_rgba(0,0,0,0.3)] flex-shrink-0 transform hover:scale-[1.02] transition-transform">
+                <div className="flex items-center gap-3 mb-4 text-blue-900 font-black uppercase tracking-widest text-[12px]">
+                    <div className="p-1.5 bg-mpt-yellow rounded-lg">
+                      <TrendingUp size={16} strokeWidth={3} />
                     </div>
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex justify-between items-center">
-                        <div className="text-[9px] text-mpt-yellow/70 uppercase font-black tracking-widest">Power Wins</div>
-                        <div className="text-xl font-black text-mpt-yellow tabular-nums">
-                            {history.filter(h => parseInt(h.amount) >= 10000).length}
+                    <span>LIVE FAN STATS</span>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                    <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex justify-between items-center shadow-inner">
+                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Global Shouts</div>
+                        <div className="text-3xl font-black text-blue-900 tabular-nums">{history.length}</div>
+                    </div>
+                    <div className="bg-blue-900 p-4 rounded-2xl border border-blue-800 flex justify-between items-center shadow-xl">
+                        <div className="text-[10px] text-mpt-yellow uppercase font-black tracking-widest">Power Winners</div>
+                        <div className="text-3xl font-black text-white tabular-nums drop-shadow-sm">
+                            {history.filter(h => parseInt(h.amount) >= 10000 || h.title.includes('GB')).length}
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-4 text-gray-800 shadow-2xl border-2 border-white/50 flex-1 overflow-auto custom-scrollbar">
-                <h4 className="font-black text-mpt-blue mb-4 uppercase tracking-widest text-xs flex items-center gap-2 shrink-0">
-                   <PartyPopper size={16} /> How to win
+            {/* How to Win Card - More readable and prominent font */}
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 text-gray-800 shadow-2xl border-b-[6px] border-mpt-yellow flex-1 overflow-auto custom-scrollbar">
+                <h4 className="font-black text-mpt-blue mb-6 uppercase tracking-widest text-sm flex items-center gap-3 shrink-0">
+                   <div className="p-2 bg-mpt-blue text-white rounded-xl">
+                    <PartyPopper size={20} />
+                   </div>
+                   CHALLENGE RULES
                 </h4>
-                <ul className="space-y-3">
-                    <li className="flex gap-3 items-start">
-                        <div className="bg-mpt-blue text-white w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0">1</div>
-                        <p className="text-[11px] font-bold text-gray-600 leading-snug">Click <span className="text-blue-900">START CHALLENGE</span> and allow Mic access.</p>
+                <ul className="space-y-4">
+                    <li className="flex gap-4 items-start group">
+                        <div className="bg-mpt-blue text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-lg group-hover:bg-mpt-yellow group-hover:text-blue-900 transition-colors">1</div>
+                        <div>
+                          <p className="text-[13px] font-black text-blue-900 uppercase tracking-tight leading-none mb-1">Get Ready</p>
+                          <p className="text-[12px] font-bold text-gray-500 leading-snug">Tap START and allow mic access to begin your journey.</p>
+                        </div>
                     </li>
-                    <li className="flex gap-3 items-start">
-                        <div className="bg-mpt-blue text-white w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0">2</div>
-                        <p className="text-[11px] font-bold text-gray-600 leading-snug">Shout as loud as you can! Higher volume = better prize tiers.</p>
+                    <li className="flex gap-4 items-start group">
+                        <div className="bg-mpt-blue text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-lg group-hover:bg-mpt-yellow group-hover:text-blue-900 transition-colors">2</div>
+                        <div>
+                          <p className="text-[13px] font-black text-blue-900 uppercase tracking-tight leading-none mb-1">Unleash Power</p>
+                          <p className="text-[12px] font-bold text-gray-500 leading-snug">Shout the keyword. Higher volume unlocks better tier prizes!</p>
+                        </div>
                     </li>
-                    <li className="flex gap-3 items-start">
-                        <div className="bg-mpt-blue text-white w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0">3</div>
-                        <p className="text-[11px] font-bold text-gray-600 leading-snug">Hold your voice in a prize zone for <span className="text-blue-900 underline decoration-mpt-yellow decoration-2">5 SECONDS</span> to win!</p>
+                    <li className="flex gap-4 items-start group">
+                        <div className="bg-mpt-blue text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-lg group-hover:bg-mpt-yellow group-hover:text-blue-900 transition-colors">3</div>
+                        <div>
+                          <p className="text-[13px] font-black text-blue-900 uppercase tracking-tight leading-none mb-1">Hold Steady</p>
+                          <p className="text-[12px] font-bold text-gray-500 leading-snug">Maintain your voice level for <span className="bg-mpt-yellow text-blue-900 px-1.5 py-0.5 rounded font-black">5 SECONDS</span> to claim victory!</p>
+                        </div>
                     </li>
                 </ul>
-                <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-                   <p className="text-[8px] font-black tracking-widest uppercase text-gray-400">© MPT Shout Fan Game 2024</p>
+                <div className="mt-8 pt-6 border-t border-gray-100 text-center opacity-40">
+                   <p className="text-[9px] font-black tracking-widest uppercase text-gray-400">MPT Shout Experience v2.5</p>
                 </div>
             </div>
         </div>
       </main>
 
+      {/* Winner Popup */}
       {showWinnerPopup && lastWin && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-mpt-blue/80 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setShowWinnerPopup(false)} />
-            <div className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl border-[6px] border-mpt-yellow animate-in zoom-in duration-300">
+            <div className="relative bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl border-[10px] border-mpt-yellow animate-in zoom-in duration-300">
                 
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-mpt-yellow w-24 h-24 rounded-full border-4 border-white flex items-center justify-center shadow-xl animate-bounce-slow">
-                    <Trophy size={48} className="text-blue-900" />
+                <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-mpt-yellow w-28 h-28 rounded-full border-4 border-white flex items-center justify-center shadow-xl animate-bounce-slow">
+                    <Trophy size={56} className="text-blue-900" />
                 </div>
 
-                <div className="mt-8 mb-6">
-                    <h2 className="text-blue-900 font-black text-4xl tracking-tighter uppercase mb-2 leading-none">VICTORY!</h2>
+                <div className="mt-10 mb-8">
+                    <h2 className="text-blue-900 font-black text-5xl tracking-tighter uppercase mb-2 leading-none">VICTORY!</h2>
                     
-                    <div className="flex justify-center mb-4 mt-2">
-                      <div className="text-8xl leading-none transform hover:rotate-12 transition-transform cursor-pointer drop-shadow-xl">
+                    <div className="flex justify-center mb-6 mt-4">
+                      <div className="text-9xl leading-none transform hover:rotate-6 transition-transform cursor-pointer drop-shadow-2xl">
                         {lastWin.icon}
                       </div>
                     </div>
 
-                    <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4">You claimed the prize</p>
+                    <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.4em] mb-4">REWARD UNLOCKED</p>
                     
-                    <div className="bg-gray-50 py-4 px-4 rounded-2xl border-2 border-gray-100 shadow-inner">
-                        <span className="text-blue-900 font-black text-3xl italic tracking-tighter block leading-tight uppercase">
+                    <div className="bg-blue-50 py-6 px-4 rounded-3xl border-2 border-blue-100 shadow-inner">
+                        <span className="text-blue-900 font-black text-4xl italic tracking-tighter block leading-tight uppercase">
                           {lastWin.title}
                         </span>
                     </div>
                 </div>
 
-                <div className="px-1 mb-6">
-                  <p className="text-gray-700 font-bold text-base leading-tight">
+                <div className="px-2 mb-8">
+                  <p className="text-gray-700 font-bold text-lg leading-tight italic">
                     {winnerMessage}
                   </p>
                 </div>
 
                 <button 
                     onClick={() => setShowWinnerPopup(false)}
-                    className="w-full py-4 bg-mpt-yellow hover:bg-blue-900 hover:text-white text-blue-900 rounded-2xl font-black text-xl uppercase tracking-tighter transition-all shadow-[0_5px_0_#B49400] active:translate-y-1 active:shadow-none"
+                    className="w-full py-5 bg-mpt-yellow hover:bg-blue-900 hover:text-white text-blue-900 rounded-2xl font-black text-2xl uppercase tracking-tighter transition-all shadow-[0_8px_0_#B49400] active:translate-y-1 active:shadow-none"
                 >
-                    AWESOME!
+                    CLAIM NOW
                 </button>
             </div>
         </div>
