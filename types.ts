@@ -9,7 +9,6 @@ export interface ShoutReward {
   color: string;
 }
 
-// Fix: Adding SpinSlice interface which was missing and causing a compilation error in SpinWheel.tsx
 export interface SpinSlice {
   id: string;
   title: string;
@@ -26,7 +25,12 @@ export interface SpinRecord {
   timestamp: number;
 }
 
+export interface AppSettings {
+  shoutDuration: number; // in seconds
+}
+
 export interface AppState {
   rewards: ShoutReward[];
   history: SpinRecord[];
+  settings: AppSettings;
 }

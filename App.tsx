@@ -4,7 +4,7 @@ import ShoutGame from './components/ShoutGame';
 import HistoryTable from './components/HistoryTable';
 import AdminPanel from './components/AdminPanel';
 import { dbService } from './services/dbService';
-import { ShoutReward, SpinRecord } from './types';
+import { ShoutReward, SpinRecord, AppSettings } from './types';
 import { INITIAL_REWARDS, COLORS } from './constants';
 import { Settings, X, TrendingUp, Trophy, PartyPopper, Mic } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -16,6 +16,7 @@ const LOGO_URL = 'https://mpt-aws-wp-bucket.s3.ap-southeast-1.amazonaws.com/wp-c
 
 const App: React.FC = () => {
   const [rewards, setRewards] = useState<ShoutReward[]>([]);
+  const [settings, setSettings] = useState<AppSettings>({ shoutDuration: 3 });
   const [history, setHistory] = useState<SpinRecord[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -30,6 +31,7 @@ const App: React.FC = () => {
   useEffect(() => {
     setRewards(dbService.getRewards());
     setHistory(dbService.getHistory());
+    setSettings(dbService.getSettings());
     
     fanfareAudioRef.current = new Audio(WIN_FANFARE_URL);
     wowAudioRef.current = new Audio(WOW_SOUND_URL);
@@ -112,9 +114,11 @@ const App: React.FC = () => {
     setShowWinnerPopup(true);
   };
 
-  const updateRewards = (newRewards: ShoutReward[]) => {
+  const handleUpdateConfig = (newRewards: ShoutReward[], newSettings: AppSettings) => {
     setRewards(newRewards);
+    setSettings(newSettings);
     dbService.saveRewards(newRewards);
+    dbService.saveSettings(newSettings);
     setShowAdmin(false);
   };
 
@@ -122,6 +126,9 @@ const App: React.FC = () => {
     if (confirm('Reset all rewards to MPT defaults?')) {
         setRewards(INITIAL_REWARDS);
         dbService.saveRewards(INITIAL_REWARDS);
+        const defaultSet = { shoutDuration: 3 };
+        setSettings(defaultSet);
+        dbService.saveSettings(defaultSet);
     }
   };
 
@@ -161,6 +168,7 @@ const App: React.FC = () => {
         <div className="lg:col-span-6 flex flex-col items-center justify-center order-1 lg:order-2 overflow-hidden">
             <ShoutGame 
                 rewards={rewards} 
+                settings={settings}
                 onResult={handleShoutResult} 
                 isPlaying={isPlaying}
                 setIsPlaying={setIsPlaying}
@@ -191,7 +199,7 @@ const App: React.FC = () => {
                 </div>
             </div>
             
-            {/* Rules Card - Even More Reduced Padding and Spacing */}
+            {/* Rules Card */}
             <div className="bg-white/95 backdrop-blur-md rounded-[2rem] p-4 text-gray-800 shadow-2xl border-b-[6px] border-mpt-yellow flex-1 overflow-auto custom-scrollbar">
                 <h4 className="font-black text-mpt-blue mb-3 uppercase tracking-[0.2em] text-[12px] flex items-center gap-2 shrink-0">
                    <div className="p-1.5 bg-mpt-blue text-white rounded-lg shadow-md">
@@ -211,7 +219,7 @@ const App: React.FC = () => {
                         <div className="bg-mpt-blue text-white w-6 h-6 rounded flex items-center justify-center text-[10px] font-black shrink-0 shadow-md group-hover:bg-mpt-yellow group-hover:text-blue-900 transition-all">2</div>
                         <div>
                           <p className="text-[13px] font-black text-blue-900 uppercase tracking-tight leading-none mb-0.5">HOLD POWER</p>
-                          <p className="text-[12px] font-bold text-gray-500 leading-tight">Shout loud for 5 seconds.</p>
+                          <p className="text-[12px] font-bold text-gray-500 leading-tight">Shout loud for {settings.shoutDuration} seconds.</p>
                         </div>
                     </li>
                     <li className="flex gap-2.5 items-start group">
@@ -226,7 +234,7 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Victory Popup - Standard Modal Size */}
+      {/* Victory Popup */}
       {showWinnerPopup && lastWin && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-mpt-blue/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowWinnerPopup(false)} />
@@ -266,7 +274,12 @@ const App: React.FC = () => {
                 >
                   <X size={48} />
                 </button>
-                <AdminPanel rewards={rewards} onSave={updateRewards} onReset={resetRewards} />
+                <AdminPanel 
+                  rewards={rewards} 
+                  settings={settings}
+                  onSave={handleUpdateConfig} 
+                  onReset={resetRewards} 
+                />
              </div>
           </div>
         </div>

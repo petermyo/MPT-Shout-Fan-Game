@@ -1,17 +1,19 @@
 
 import React, { useState } from 'react';
-import { ShoutReward } from '../types';
+import { ShoutReward, AppSettings } from '../types';
 import { COLORS } from '../constants';
-import { Plus, Trash2, Save, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, Save, RotateCcw, Clock } from 'lucide-react';
 
 interface AdminPanelProps {
   rewards: ShoutReward[];
-  onSave: (rewards: ShoutReward[]) => void;
+  settings: AppSettings;
+  onSave: (rewards: ShoutReward[], settings: AppSettings) => void;
   onReset: () => void;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, onSave, onReset }) => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, settings, onSave, onReset }) => {
   const [localRewards, setLocalRewards] = useState<ShoutReward[]>(rewards);
+  const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
 
   const handleAdd = () => {
     const newReward: ShoutReward = {
@@ -34,11 +36,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, onSave, onReset }) => 
     setLocalRewards(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
+  const handleSettingsChange = (field: keyof AppSettings, value: number) => {
+    setLocalSettings(prev => ({ ...prev, [field]: value }));
+  };
+
   const inputBaseClass = "w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 font-bold shadow-sm";
 
   return (
     <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 p-10 flex flex-col h-full overflow-hidden">
-      <div className="flex justify-between items-center mb-10 shrink-0">
+      <div className="flex justify-between items-center mb-6 shrink-0">
         <div>
           <h2 className="text-3xl font-black text-blue-900 flex items-center gap-3">
             <span>⚙️</span> Shout Configuration
@@ -53,11 +59,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, onSave, onReset }) => 
                 <RotateCcw size={20} /> Reset
             </button>
             <button 
-                onClick={() => onSave(localRewards)}
+                onClick={() => onSave(localRewards, localSettings)}
                 className="flex items-center gap-2 text-sm font-black bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl transition-all shadow-xl active:scale-95 shadow-blue-200"
             >
                 <Save size={20} /> Save Changes
             </button>
+        </div>
+      </div>
+
+      {/* Global Settings Section */}
+      <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 mb-6 shrink-0">
+        <h3 className="text-sm font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <Clock size={16} /> Global Game Settings
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-[11px] uppercase font-black text-gray-500 tracking-widest px-1">Shout Duration (Seconds)</label>
+            <input 
+              type="number"
+              min="1"
+              max="10"
+              value={localSettings.shoutDuration}
+              onChange={(e) => handleSettingsChange('shoutDuration', parseInt(e.target.value) || 1)}
+              className={inputBaseClass}
+              placeholder="e.g. 3"
+            />
+          </div>
         </div>
       </div>
 

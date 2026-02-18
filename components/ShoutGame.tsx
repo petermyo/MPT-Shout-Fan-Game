@@ -1,17 +1,18 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ShoutReward } from '../types';
+import { ShoutReward, AppSettings } from '../types';
 import { COLORS, KEYWORDS, SOUNDS } from '../constants';
 import { Mic, Volume2, Timer, Zap } from 'lucide-react';
 
 interface ShoutGameProps {
   rewards: ShoutReward[];
+  settings: AppSettings;
   onResult: (reward: ShoutReward) => void;
   isPlaying: boolean;
   setIsPlaying: (val: boolean) => void;
 }
 
-const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, setIsPlaying }) => {
+const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, settings, onResult, isPlaying, setIsPlaying }) => {
   const [volume, setVolume] = useState(0);
   const [targetReward, setTargetReward] = useState<ShoutReward | null>(null);
   const [holdTime, setHoldTime] = useState(0); 
@@ -28,7 +29,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
   const tinSoundRef = useRef<HTMLAudioElement | null>(null);
   const startSoundRef = useRef<HTMLAudioElement | null>(null);
 
-  const WIN_DURATION = 5000;
+  const winDurationMs = settings.shoutDuration * 1000;
 
   useEffect(() => {
     tinSoundRef.current = new Audio(SOUNDS.TIN);
@@ -70,10 +71,10 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
     } else if (countdown === 0) {
       const timer = setTimeout(() => {
         playSound(startSoundRef.current);
-        setCountdown(-1); // Use -1 to show "SHOUT!"
+        setCountdown(-1); // Use -1 to show "GO!"
         initAudio();
         
-        // Hide preparation overlay after a brief flash of "SHOUT!"
+        // Hide preparation overlay after a brief flash of "GO!"
         setTimeout(() => {
           setIsPreparing(false);
           setCountdown(null);
@@ -119,11 +120,11 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
       const deltaTime = time - (lastTimeRef.current || time);
       setHoldTime(prev => {
         const next = prev + deltaTime;
-        if (next >= WIN_DURATION && !winRef.current) {
+        if (next >= winDurationMs && !winRef.current) {
           winRef.current = true;
           onResult(activeReward);
           setIsPlaying(false);
-          return WIN_DURATION;
+          return winDurationMs;
         }
         return next;
       });
@@ -147,7 +148,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [isPlaying, rewards]);
+  }, [isPlaying, rewards, settings.shoutDuration]);
 
   const sortedRewards = [...rewards].sort((a, b) => b.minVolume - a.minVolume);
 
@@ -202,7 +203,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
           </div>
           <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-2 italic leading-none">The Shout Challenge</h2>
           <p className="text-mpt-yellow font-bold text-base mb-8 max-w-xs mx-auto uppercase tracking-wide">
-            Shout as loud as you can for 5 seconds to win!
+            Shout as loud as you can for {settings.shoutDuration} seconds to win!
           </p>
           
           {micError && <p className="text-red-400 font-black text-xs mb-4 uppercase">{micError}</p>}
@@ -237,7 +238,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
             <div className="flex items-center gap-3 text-right">
                <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-blue-900/50 leading-none mb-1">HOLD TIMER</p>
-                  <p className="text-2xl font-black leading-none text-blue-900">{(holdTime / 1000).toFixed(1)}s <span className="text-sm text-blue-900/30 font-bold">/ 5s</span></p>
+                  <p className="text-2xl font-black leading-none text-blue-900">{(holdTime / 1000).toFixed(1)}s <span className="text-sm text-blue-900/30 font-bold">/ {settings.shoutDuration}s</span></p>
                </div>
                <div className="p-2.5 bg-blue-900 rounded-xl text-white shadow-sm">
                   <Timer size={20} className={holdTime > 0 ? "animate-pulse" : ""} />
@@ -271,7 +272,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
             <div className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1">
               {sortedRewards.map((reward) => {
                 const isActive = targetReward?.id === reward.id;
-                const progress = isActive ? (holdTime / WIN_DURATION) * 100 : 0;
+                const progress = isActive ? (holdTime / winDurationMs) * 100 : 0;
                 
                 return (
                   <div 

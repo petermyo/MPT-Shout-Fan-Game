@@ -1,9 +1,14 @@
 
-import { ShoutReward, SpinRecord } from '../types';
+import { ShoutReward, SpinRecord, AppSettings } from '../types';
 import { INITIAL_REWARDS } from '../constants';
 
 const REWARDS_KEY = 'mpt_shout_rewards';
 const HISTORY_KEY = 'mpt_shout_history';
+const SETTINGS_KEY = 'mpt_shout_settings';
+
+const DEFAULT_SETTINGS: AppSettings = {
+  shoutDuration: 3
+};
 
 export const dbService = {
   getRewards: (): ShoutReward[] => {
@@ -13,6 +18,15 @@ export const dbService = {
 
   saveRewards: (rewards: ShoutReward[]) => {
     localStorage.setItem(REWARDS_KEY, JSON.stringify(rewards));
+  },
+
+  getSettings: (): AppSettings => {
+    const data = localStorage.getItem(SETTINGS_KEY);
+    return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+  },
+
+  saveSettings: (settings: AppSettings) => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   },
 
   getHistory: (): SpinRecord[] => {
