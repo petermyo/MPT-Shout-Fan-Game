@@ -24,7 +24,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
   const lastTimeRef = useRef<number>(0);
   const winRef = useRef(false);
 
-  const WIN_DURATION = 5000; // 3 seconds
+  const WIN_DURATION = 5000; // Updated to 5 seconds
 
   const startMic = async () => {
     try {
@@ -105,14 +105,14 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
   const sortedRewards = [...rewards].sort((a, b) => b.minVolume - a.minVolume);
 
   return (
-    <div className="relative flex flex-col items-center w-full max-w-xl px-4">
+    <div className="relative flex flex-col items-center w-full max-w-xl px-4 overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 -z-10 opacity-10 flex items-center justify-center overflow-hidden pointer-events-none">
-         <div className="flex gap-2 items-end h-96">
-           {[...Array(30)].map((_, i) => (
+         <div className="flex gap-2 items-end h-64">
+           {[...Array(20)].map((_, i) => (
              <div 
                key={i} 
-               className="w-3 bg-white rounded-t-full transition-all duration-75"
+               className="w-2 bg-white rounded-t-full transition-all duration-75"
                style={{ height: `${Math.random() * volume + 5}%`, opacity: volume / 100 }}
              />
            ))}
@@ -120,48 +120,48 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
       </div>
 
       {!isPlaying ? (
-        <div className="text-center py-12 animate-in fade-in zoom-in duration-500 w-full">
-          <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl border-4 border-mpt-yellow relative">
-            <Mic size={64} className="text-mpt-blue" />
+        <div className="text-center py-8 animate-in fade-in zoom-in duration-500 w-full">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl border-4 border-mpt-yellow relative">
+            <Mic size={48} className="text-mpt-blue" />
             <div className="absolute inset-0 rounded-full border-4 border-mpt-yellow animate-ping opacity-25" />
           </div>
-          <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic leading-none">The Shout Challenge</h2>
-          <p className="text-mpt-yellow font-bold text-lg mb-8 max-w-xs mx-auto">
-            Shout the keyword as loud as you can to win!
+          <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2 italic leading-none">The Shout Challenge</h2>
+          <p className="text-mpt-yellow font-bold text-sm mb-6 max-w-xs mx-auto uppercase tracking-wide">
+            Shout as loud as you can for 5 seconds to win!
           </p>
           
-          {micError && <p className="text-red-400 font-black text-sm mb-4 uppercase">{micError}</p>}
+          {micError && <p className="text-red-400 font-black text-[10px] mb-4 uppercase">{micError}</p>}
           
           <button
             onClick={startMic}
-            className="group px-12 py-6 bg-mpt-yellow text-blue-900 rounded-full font-black text-3xl uppercase tracking-tighter shadow-[0_8px_0_#B49400] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-4 mx-auto"
+            className="group px-8 py-4 bg-mpt-yellow text-blue-900 rounded-full font-black text-xl uppercase tracking-tighter shadow-[0_6px_0_#B49400] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-3 mx-auto"
           >
-            <Zap className="group-hover:animate-pulse" /> START CHALLENGE
+            <Zap size={20} className="group-hover:animate-pulse" /> START CHALLENGE
           </button>
         </div>
       ) : (
-        <div className="w-full space-y-6 py-4">
-          {/* Keyword Prompt */}
-          <div className="text-center bg-white rounded-3xl p-6 shadow-2xl border-4 border-mpt-yellow transform -rotate-1">
-             <p className="text-xs font-black text-blue-900/40 uppercase tracking-[0.2em] mb-1">SHOUT THIS NOW:</p>
-             <h3 className="text-6xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse">
+        <div className="w-full space-y-4 py-2">
+          {/* Keyword Prompt - Reduced Size */}
+          <div className="text-center bg-white rounded-2xl p-4 shadow-xl border-4 border-mpt-yellow transform -rotate-1 mx-auto max-w-sm">
+             <p className="text-[10px] font-black text-blue-900/50 uppercase tracking-[0.2em] mb-0.5">SHOUT THIS NOW:</p>
+             <h3 className="text-3xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse">
                "{currentKeyword}"
              </h3>
           </div>
 
-          <div className="flex gap-6 items-stretch">
+          <div className="flex gap-4 items-stretch max-h-[400px]">
             {/* Vertical Power Meter Indicator */}
-            <div className="w-16 bg-white/10 rounded-3xl border-2 border-white/20 relative overflow-hidden flex flex-col justify-end p-1 shadow-inner">
+            <div className="w-12 bg-white/10 rounded-2xl border-2 border-white/20 relative overflow-hidden flex flex-col justify-end p-1 shadow-inner">
                <div 
-                 className="w-full rounded-2xl transition-all duration-100 ease-out shadow-[0_0_20px_rgba(255,209,0,0.6)]"
+                 className="w-full rounded-xl transition-all duration-100 ease-out shadow-[0_0_20px_rgba(255,209,0,0.6)]"
                  style={{ 
                    height: `${volume}%`, 
                    backgroundColor: volume > 80 ? COLORS.DANGER : volume > 50 ? COLORS.MPT_YELLOW : COLORS.WHITE,
-                   boxShadow: `0 0 ${volume/2}px ${volume > 50 ? COLORS.MPT_YELLOW : '#FFF'}`
+                   boxShadow: `0 0 ${volume/3}px ${volume > 50 ? COLORS.MPT_YELLOW : '#FFF'}`
                  }}
                />
-               <div className="absolute inset-x-0 bottom-4 text-center pointer-events-none">
-                  <span className="text-[10px] font-black text-blue-900 bg-white/80 px-1 rounded">{volume}%</span>
+               <div className="absolute inset-x-0 bottom-2 text-center pointer-events-none">
+                  <span className="text-[8px] font-black text-blue-900 bg-white/90 px-1 rounded">{volume}%</span>
                </div>
                
                {/* Tier markers on the gauge */}
@@ -174,8 +174,8 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                ))}
             </div>
 
-            {/* Reward Ladder */}
-            <div className="flex-1 space-y-2">
+            {/* Reward Ladder - Compacted */}
+            <div className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar pr-1">
               {sortedRewards.map((reward) => {
                 const isActive = targetReward?.id === reward.id;
                 const progress = isActive ? (holdTime / WIN_DURATION) * 100 : 0;
@@ -183,10 +183,10 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                 return (
                   <div 
                     key={reward.id} 
-                    className={`relative p-4 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+                    className={`relative p-2.5 rounded-xl border-2 transition-all duration-300 overflow-hidden ${
                       isActive 
-                        ? 'bg-white scale-105 border-mpt-yellow shadow-[0_0_30px_rgba(255,209,0,0.4)] z-10' 
-                        : 'bg-white/5 border-white/10 opacity-40'
+                        ? 'bg-white scale-[1.02] border-mpt-yellow shadow-lg z-10' 
+                        : 'bg-white/5 border-white/10 opacity-30'
                     }`}
                   >
                     {/* Progress bar background for active tier */}
@@ -198,21 +198,21 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                     )}
                     
                     <div className="relative flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <span className="text-3xl drop-shadow-sm">{reward.icon}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl drop-shadow-sm">{reward.icon}</span>
                         <div>
-                          <h4 className={`font-black uppercase tracking-tighter text-lg leading-tight ${isActive ? 'text-blue-900' : 'text-white'}`}>
+                          <h4 className={`font-black uppercase tracking-tighter text-sm leading-tight ${isActive ? 'text-blue-900' : 'text-white'}`}>
                             {reward.title}
                           </h4>
-                          <p className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-blue-700' : 'text-white/40'}`}>
+                          <p className={`text-[8px] font-bold uppercase tracking-widest ${isActive ? 'text-blue-700' : 'text-white/40'}`}>
                             Goal: {reward.minVolume}% Intensity
                           </p>
                         </div>
                       </div>
                       {isActive && (
                          <div className="flex flex-col items-end">
-                            <div className="text-blue-900 font-black text-xs animate-bounce">HOLD!</div>
-                            <div className="h-1 w-12 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                            <div className="text-blue-900 font-black text-[9px] animate-pulse">HOLDING!</div>
+                            <div className="h-1 w-10 bg-gray-200 rounded-full mt-0.5 overflow-hidden">
                                <div className="h-full bg-blue-900 transition-all duration-100" style={{ width: `${progress}%` }} />
                             </div>
                          </div>
@@ -224,33 +224,33 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-            <div className="flex items-center gap-3">
-               <div className="p-2 bg-mpt-yellow rounded-lg text-blue-900">
-                  <Volume2 size={24} />
+          <div className="flex justify-between items-center bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+            <div className="flex items-center gap-2">
+               <div className="p-1.5 bg-mpt-yellow rounded-lg text-blue-900">
+                  <Volume2 size={18} />
                </div>
                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-mpt-yellow">Live Mic</p>
-                  <p className="text-2xl font-black leading-none">{volume}%</p>
+                  <p className="text-[8px] font-black uppercase tracking-widest text-mpt-yellow">Mic</p>
+                  <p className="text-lg font-black leading-none">{volume}%</p>
                </div>
             </div>
             
-            <div className="flex items-center gap-3 text-right">
+            <div className="flex items-center gap-2 text-right">
                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-mpt-yellow">Hold Status</p>
-                  <p className="text-2xl font-black leading-none">{(holdTime / 1000).toFixed(1)}s / 3.0s</p>
+                  <p className="text-[8px] font-black uppercase tracking-widest text-mpt-yellow">Timer</p>
+                  <p className="text-lg font-black leading-none">{(holdTime / 1000).toFixed(1)}s / 5s</p>
                </div>
-               <div className="p-2 bg-white rounded-lg text-blue-900">
-                  <Timer size={24} className={holdTime > 0 ? "animate-pulse" : ""} />
+               <div className="p-1.5 bg-white rounded-lg text-blue-900">
+                  <Timer size={18} className={holdTime > 0 ? "animate-pulse" : ""} />
                </div>
             </div>
           </div>
 
           <button
             onClick={() => setIsPlaying(false)}
-            className="w-full py-2 text-white/30 font-black uppercase tracking-[0.3em] text-[10px] hover:text-white transition-colors"
+            className="w-full py-1 text-white/30 font-black uppercase tracking-[0.2em] text-[8px] hover:text-white transition-colors"
           >
-            [ CANCEL CHALLENGE ]
+            [ CANCEL ]
           </button>
         </div>
       )}
