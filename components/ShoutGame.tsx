@@ -155,25 +155,25 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
     <div className="relative flex flex-col items-center w-full max-w-xl px-4 overflow-hidden">
       {/* PREPARATION & COUNTDOWN OVERLAY */}
       {isPreparing && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-blue-900/80 backdrop-blur-md p-6">
-          <div className="bg-white rounded-[3rem] p-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)] border-[10px] border-mpt-yellow max-w-sm w-full animate-in zoom-in duration-300">
-            <p className="text-gray-400 font-black text-sm uppercase tracking-[0.3em] mb-4">GET READY TO WIN</p>
-            <h3 className="text-blue-900 font-black text-2xl uppercase tracking-tighter mb-1 leading-none italic">SHOUT THIS NOW:</h3>
-            <div className="bg-mpt-yellow/10 py-4 px-2 rounded-2xl border-2 border-mpt-yellow/20 mb-8 mt-2">
-               <h2 className="text-5xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse leading-none">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-blue-900/85 backdrop-blur-md p-6">
+          <div className="bg-white rounded-[2.5rem] p-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)] border-[8px] border-mpt-yellow max-w-xs w-full animate-in zoom-in duration-300">
+            <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] mb-3">GET READY</p>
+            <h3 className="text-blue-900 font-black text-xl uppercase tracking-tighter mb-1 leading-none italic">SHOUT NOW:</h3>
+            <div className="bg-mpt-yellow/10 py-3 px-1 rounded-xl border-2 border-mpt-yellow/20 mb-6 mt-2">
+               <h2 className="text-4xl font-black text-blue-900 uppercase italic tracking-tighter animate-pulse leading-none">
                  "{currentKeyword}"
                </h2>
             </div>
             
-            <div className="flex justify-center items-center h-32">
+            <div className="flex justify-center items-center h-24">
               {countdown !== null && countdown > 0 && (
-                <div key={countdown} className="text-blue-900 font-black text-8xl animate-in zoom-in duration-300">
+                <div key={countdown} className="text-blue-900 font-black text-7xl animate-in zoom-in duration-300">
                   {countdown}
                 </div>
               )}
               {countdown === -1 && (
-                <div className="text-mpt-blue font-black text-7xl italic animate-bounce leading-none">
-                  SHOUT!
+                <div className="text-mpt-blue font-black text-6xl italic animate-bounce leading-none">
+                  GO!
                 </div>
               )}
             </div>
@@ -217,7 +217,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
         </div>
       ) : (
         <div className="w-full space-y-4 py-2">
-          {/* Main HUD: Status info moved to top to save space */}
+          {/* Main HUD */}
           <div className="flex justify-between items-center bg-white rounded-[1.5rem] p-4 border-2 border-mpt-yellow shadow-2xl">
             <div className="flex items-center gap-3">
                <div className="p-2.5 bg-mpt-yellow rounded-xl text-blue-900 shadow-sm">
@@ -229,7 +229,6 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                </div>
             </div>
 
-            {/* Compact Indicator for active keyword during play */}
             <div className="hidden sm:flex flex-col items-center">
                 <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-0.5">TARGET:</span>
                 <span className="text-blue-900 font-black text-xs uppercase italic tracking-tighter">{currentKeyword}</span>
@@ -247,7 +246,6 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
           </div>
 
           <div className="flex gap-4 items-stretch h-[420px]">
-            {/* Vertical Power Meter */}
             <div className="w-14 bg-white/10 rounded-2xl border-2 border-white/15 relative overflow-hidden flex flex-col justify-end p-1.5 shadow-inner">
                <div 
                  className="w-full rounded-xl transition-all duration-100 ease-out"
@@ -270,7 +268,6 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
                ))}
             </div>
 
-            {/* Reward Ladder */}
             <div className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1">
               {sortedRewards.map((reward) => {
                 const isActive = targetReward?.id === reward.id;
