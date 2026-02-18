@@ -1,0 +1,7 @@
+{
+  "name": "MPT Shout Fan Game",
+  "description": "A vibrant and professional Shout-to-Win application featuring brand-aligned MPT colors (Yellow, Blue, White). Use your voice to win rewards!",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
