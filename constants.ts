@@ -10,7 +10,7 @@ export const COLORS = {
   DANGER: '#EF4444'
 };
 
-export const KEYWORDS = ["MPT", "HtawB", "Hti Pauk", "GO!", "WINNER", "VOICE POWER"];
+export const KEYWORDS = ["MPT", "Htaw B", "Hti Pauk", "BOGO!", "WINNER!"];
 
 export const INITIAL_REWARDS: ShoutReward[] = [
   { id: '6', title: 'Pen', amount: '250', icon: '🖊️', minVolume: 40, maxVolume: 55, color: COLORS.LIGHT_BLUE },
