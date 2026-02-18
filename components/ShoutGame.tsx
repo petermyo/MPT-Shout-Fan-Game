@@ -24,7 +24,7 @@ const ShoutGame: React.FC<ShoutGameProps> = ({ rewards, onResult, isPlaying, set
   const lastTimeRef = useRef<number>(0);
   const winRef = useRef(false);
 
-  const WIN_DURATION = 3000; // 3 seconds
+  const WIN_DURATION = 5000; // 3 seconds
 
   const startMic = async () => {
     try {
