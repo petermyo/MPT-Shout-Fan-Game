@@ -147,7 +147,7 @@ const App: React.FC = () => {
           <div className="h-10 w-[1px] bg-gray-200 hidden md:block"></div>
           <div className="flex items-center gap-3">
             <Mic className="text-blue-900" size={24} />
-            <h1 className="text-blue-900 font-black text-2xl uppercase tracking-tighter hidden sm:block italic leading-none">MPT Shout Fan Game</h1>
+            <h1 className="text-blue-900 font-black text-2xl uppercase tracking-tighter hidden sm:block leading-none">အတူတူ အော်ကြည့်မယ်</h1>
           </div>
         </div>
         <button 
