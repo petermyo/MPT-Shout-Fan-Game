@@ -67,6 +67,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, settings, onSave, onRe
         </div>
       </div>
 
+
+
+      <div className="space-y-8 overflow-y-auto pr-4 custom-scrollbar flex-1 pb-6">
       {/* Global Settings Section */}
       <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 mb-6 shrink-0">
         <h3 className="text-sm font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -88,7 +91,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ rewards, settings, onSave, onRe
         </div>
       </div>
 
-      <div className="space-y-8 overflow-y-auto pr-4 custom-scrollbar flex-1 pb-6">
+        
         {localRewards.map((reward, idx) => (
           <div key={reward.id} className="p-8 rounded-3xl border border-gray-100 bg-gray-50/50 flex flex-col gap-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-5">
