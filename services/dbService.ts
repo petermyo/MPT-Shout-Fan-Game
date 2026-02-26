@@ -36,7 +36,7 @@ export const dbService = {
 
   addSpinRecord: (record: SpinRecord) => {
     const history = dbService.getHistory();
-    const updated = [record, ...history].slice(0, 50); // Keep last 50
+    const updated = [record, ...history].slice(0, 500); // Keep last 50
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
     return updated;
   },
