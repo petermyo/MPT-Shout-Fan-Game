@@ -27,7 +27,7 @@ export const SOUNDS = {
 export const INITIAL_REWARDS: ShoutReward[] = [
   { id: '1', title: 'NoteBook', amount: '2500', icon: '📓', minVolume: 20, maxVolume: 35, color: COLORS.MPT_YELLOW },  
   { id: '2', title: '500MB', amount: '7400', icon: '📶', minVolume: 35, maxVolume: 55, color: COLORS.LIGHT_BLUE }
-  { id: '3', title: '1 GB', amount: '15000', icon: '🌐', minVolume: 55, maxVolume: 85, color: COLORS.MPT_YELLOW },
+  { id: '3', title: '1 GB', amount: '15000', icon: '📶', minVolume: 55, maxVolume: 85, color: COLORS.MPT_YELLOW },
   { id: '4', title: '5 GB', amount: '75000', icon: '⚡', minVolume: 85, maxVolume: 100, color: COLORS.WHITE },
   // { id: '6', title: '500MB', amount: '1500', icon: '🖊️', minVolume: 25, maxVolume: 55, color: COLORS.LIGHT_BLUE },
   // { id: '5', title: 'Book', amount: '2500', icon: '📖', minVolume: 55, maxVolume: 65, color: COLORS.MPT_YELLOW },
